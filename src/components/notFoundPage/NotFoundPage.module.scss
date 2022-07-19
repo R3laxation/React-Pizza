@@ -1,6 +1,14 @@
-.title {
+.root {
+  padding: 100px;
+  max-width: 750px;
+  margin: 0 auto;
   text-align: center;
-  p{
-    font-size: 100px;
+
+  span {
+    font-size: 64px;
   }
+}
+
+.description {
+  font-size: 22px;
 }
