@@ -1,6 +1,10 @@
 import {FC, useState} from 'react';
 import {useAppDispatch, useAppSelector} from "../../bll/store";
-import {addItem, CartItemType} from "../../bll/slises/cartSlice";
+import {addItem} from "../../bll/slises/cart/cartSlice";
+import { Link } from 'react-router-dom';
+import {selectCartItemById} from "../../bll/slises/cart/selectors";
+import {CartItemType} from "../../bll/slises/cart/types";
+
 
 export type PizzaBlockType = {
     id: number,
@@ -21,7 +25,7 @@ export const PizzaBlock: FC<PizzaBlockType> = ({title, price, imageUrl, sizes, t
     const dispatch = useAppDispatch();
 
     // const {count} = useAppSelector<any>(state => state.cart.items.find(obj => obj.id === id))
-    const cartItem = useAppSelector(state => state.cart.items.find(obj => obj.id === id))
+    const cartItem = useAppSelector(selectCartItemById(id))
     const addedCount = cartItem ? cartItem.count : ''
 
     const onClickAdd = () => {
@@ -35,12 +39,14 @@ export const PizzaBlock: FC<PizzaBlockType> = ({title, price, imageUrl, sizes, t
 
     return (
         <div className="pizza-block-wrapper">
-            <div className="pizza-block">
-                <img
-                    className="pizza-block__image"
-                    src={imageUrl}
-                    alt="Pizza"
-                />
+            <div className="pizza-block" >
+                <Link to={`/pizza/${id}`}>
+                    <img
+                        className="pizza-block__image"
+                        src={imageUrl}
+                        alt="Pizza"
+                    />
+                </Link>
                 <h4 className="pizza-block__title">{title}</h4>
                 <div className="pizza-block__selector">
                     <ul>

@@ -1,11 +1,15 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
+import {getCartFromLS} from "../../../utils/getCartFromLocalstorage";
+import {calcTotalPrice} from "../../../utils/calcTotalPrice";
+import {CartItemType, CartStateType} from "./types";
 
+const {items, totalPrice} = getCartFromLS();
 
 const cartSlice = createSlice({
     name: 'card',
     initialState: {
-        totalPrice: 0,
-        items: [],
+        totalPrice: totalPrice,
+        items: items,
 
     } as CartStateType,
     reducers: {
@@ -21,7 +25,7 @@ const cartSlice = createSlice({
                 state.items.push({...action.payload})
             }
 
-            state.totalPrice = state.items.reduce((sum, obj) => sum + (obj.price * obj.count), 0)
+            state.totalPrice = calcTotalPrice(state.items)
 
         },
         removeItem(state, action: PayloadAction<{ id: number }>) {
@@ -31,15 +35,15 @@ const cartSlice = createSlice({
             state.items = []
             state.totalPrice = 0;
         },
-        plusItem(state, action: PayloadAction<{id: number}>){
+        plusItem(state, action: PayloadAction<{ id: number }>) {
             const findItem = state.items.find(obj => obj.id === action.payload.id)
-            if(findItem){
+            if (findItem) {
                 findItem.count++
             }
         },
-        minusItem(state, action: PayloadAction<{id: number}>){
+        minusItem(state, action: PayloadAction<{ id: number }>) {
             const findItem = state.items.find(obj => obj.id === action.payload.id)
-            if(findItem && findItem.count > 0){
+            if (findItem) {
                 findItem.count--
             }
             // else if(findItem && findItem.count <= 0) {
@@ -50,21 +54,9 @@ const cartSlice = createSlice({
     },
 })
 
+
+
 export const {addItem, removeItem, clearItems, plusItem, minusItem} = cartSlice.actions;
 
 export default cartSlice.reducer
 
-export type CartStateType = {
-    totalPrice: number
-    items: CartItemType[]
-}
-
-export type CartItemType = {
-    id: number,
-    imageUrl: string,
-    title: string,
-    price: number,
-    type: string,
-    size: number
-    count: number
-}

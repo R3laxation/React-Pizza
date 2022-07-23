@@ -1,16 +1,17 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef} from 'react';
 import {Categories} from "../components/Categories";
 import {Sort, sortList} from "../components/Sort";
-import Skeleton from "../components/pizzaBlock/Skeleton";
-import {PizzaBlock} from "../components/pizzaBlock/PizzaBlock";
+import {PizzaBlock, Skeleton} from "../components";
 import {Pagination} from "../components/pagination/Pagination";
-import {SearchContext} from "../App";
 import {useSelector} from "react-redux";
-import {FilterStateType, setCategoryId, setCurrentPage, setFilters, SortType} from "../bll/slises/filterSlice";
+import { setCategoryId, setCurrentPage, setFilters,} from "../bll/slises/filter/filterSlice";
 import {AppRootStateType, useAppDispatch, useAppSelector} from "../bll/store";
 import qs from 'qs';
 import {useNavigate} from "react-router-dom";
-import {fetchPizzas} from '../bll/slises/pizzaSlice';
+import {fetchPizzas} from '../bll/slises/pizza/pizzaSlice';
+import {FilterStateType, SortType} from "../bll/slises/filter/types";
+import { selectFilter } from '../bll/slises/filter/selectors';
+import { selectPizzaData } from '../bll/slises/pizza/selectors';
 
 
 export type ParamsType = {
@@ -24,21 +25,21 @@ const Home = ({}: HomePropsType) => {
     const {
         categoryId,
         sort,
-        currentPage
-    } = useSelector<AppRootStateType, FilterStateType>(state => state.filter)
-    const items = useAppSelector(state => state.pizza.items)
-    const status = useAppSelector<'entity' | 'loading' | 'success' | 'error'>(state => state.pizza.status)
+        currentPage, searchValue,
+    } = useSelector<AppRootStateType, FilterStateType>(selectFilter)
+    const {items, status} = useAppSelector(selectPizzaData)
+    // const status = useAppSelector<'entity' | 'loading' | 'success' | 'error'>(state => state.pizza.status)
 
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
     const isSearch = useRef(false)
     const isMounted = useRef(false)
 
-    const {searchValue} = React.useContext(SearchContext)
 
-    const onClickCategory = (categoryId: number) => {
+    const onChangeCategory = useCallback((categoryId: number) => {
         dispatch(setCategoryId({categoryId}))
-    }
+    }, [])
+
     const onChangePage = (currentPage: number) => {
         dispatch(setCurrentPage({currentPage}))
     }
@@ -91,14 +92,14 @@ const Home = ({}: HomePropsType) => {
     }, [categoryId, sort.sortProperty, searchValue, currentPage])
 
     const skeletons = [...new Array(10)].map((_, index) => <Skeleton key={index}/>)
-    const pizzas = items.map((item) => <PizzaBlock key={item.id} {...item}/>);
+    const pizzas = items.filter((item) => item.title.toLowerCase().includes(searchValue.toLowerCase())).map((item) => <PizzaBlock key={item.id} {...item}/>)
 
     return (
         <div className="content">
             <div className="container">
                 <div className="content__top">
-                    <Categories value={categoryId} onChangeCategory={(id: number) => onClickCategory(id)}/>
-                    <Sort/>
+                    <Categories value={categoryId} onChangeCategory={onChangeCategory}/>
+                    <Sort value={sort}/>
                 </div>
 
                 <h2 className="content__title">Все пиццы</h2>

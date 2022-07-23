@@ -2,7 +2,7 @@ import React from 'react';
 import {NavLink} from "react-router-dom";
 import {useAppDispatch, useAppSelector} from "../bll/store";
 import {CardItem} from "../components/CardItem";
-import {clearItems, removeItem} from "../bll/slises/cartSlice";
+import {clearItems, removeItem} from "../bll/slises/cart/cartSlice";
 import {CartEmpty} from "../components/CartEmpty";
 
 const Cart = () => {

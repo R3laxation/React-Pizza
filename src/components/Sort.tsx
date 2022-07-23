@@ -1,9 +1,9 @@
-import React, {LegacyRef, useEffect, useRef, useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
-import {AppRootStateType} from "../bll/store";
-import {setSort, SortType} from "../bll/slises/filterSlice";
+import React, {memo, useEffect, useRef, useState} from "react";
+import {useDispatch} from "react-redux";
+import {setSort} from "../bll/slises/filter/filterSlice";
+import { SortType } from "../bll/slises/filter/types";
 
-type SortPropsType = {}
+type SortPropsType = {value: SortType}
 export const sortList: SortType[] = [
     {name: 'популярности (DESC)', sortProperty: 'rating'},
     {name: 'популярности (ASC)', sortProperty: '-rating'},
@@ -13,14 +13,10 @@ export const sortList: SortType[] = [
     {name: 'алфавиту (ASC)', sortProperty: '-title'},
 ]
 
-
-export const Sort = () => {
+export const Sort = memo(({value}:SortPropsType) => {
 
     const dispatch = useDispatch()
-    const sort = useSelector<AppRootStateType, SortType>(state => state.filter.sort)
     const sortRef = useRef<HTMLDivElement>(null)
-
-
     const [open, setOpen] = useState(false)
 
     const onClickListItem = (sort: SortType) => {
@@ -30,8 +26,13 @@ export const Sort = () => {
 
     useEffect(() => {
 
-        const handleClickOutside = (event: any) => {
-            if (!event.path.includes(sortRef.current)) {
+        const handleClickOutside = (event: MouseEvent) => {
+
+            const _event = event as MouseEvent & {
+                path: Node []
+            };
+
+            if (sortRef.current && !_event.path.includes(sortRef.current)) {
                 setOpen(false)
                 // не был клик на сорт
             }
@@ -56,16 +57,16 @@ export const Sort = () => {
                     />
                 </svg>
                 <b>Сортировка по:</b>
-                <span onClick={() => setOpen(!open)}>{sort.name}</span>
+                <span onClick={() => setOpen(!open)}>{value.name}</span>
             </div>
             {open && <div className="sort__popup">
                 <ul>
                     {sortList.map((list, index) => <li onClick={() => onClickListItem(list)}
-                                                       className={sort.sortProperty === list.sortProperty ? 'active' : ''}
+                                                       className={value.sortProperty === list.sortProperty ? 'active' : ''}
                                                        key={index}>{list.name}</li>)}
                 </ul>
             </div>}
 
         </div>
     )
-}
+})

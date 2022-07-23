@@ -1,14 +1,18 @@
 import debounce from 'lodash.debounce';
 import React, {ChangeEvent, useState} from 'react';
 import s from './Search.module.scss'
+import {useAppDispatch} from "../../bll/store";
+import {setSearchValue} from "../../bll/slises/filter/filterSlice";
 
 type SearchPropsType = {}
 
 export const Search = ({}: SearchPropsType) => {
     const [value, setValue] = useState('')
     const inputRef = React.useRef<HTMLInputElement>(null)
+    const dispatch = useAppDispatch();
 
     const onClickClear = () => {
+        dispatch(setSearchValue({searchValue: ''}))
         setValue('')
         if (inputRef.current) {
             inputRef.current.focus()
@@ -16,14 +20,14 @@ export const Search = ({}: SearchPropsType) => {
     }
     const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
         setValue(e.currentTarget.value)
-        // updateSearchValue(e.currentTarget.value)
+        updateSearchValue(e.currentTarget.value)
     }
 
-    // const updateSearchValue =  React.useCallback(
-    //     debounce((str: string) => {
-    //         setSearchValue(str)
-    //     }, 1000), []
-    // )
+    const updateSearchValue = React.useCallback(
+        debounce((str: string) => {
+            dispatch(setSearchValue({searchValue: str}))
+        }, 1000), []
+    )
 
     return (
         <div className={s.root}>
