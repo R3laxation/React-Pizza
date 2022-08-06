@@ -27,16 +27,15 @@ export const Sort = memo(({value}:SortPropsType) => {
     useEffect(() => {
 
         const handleClickOutside = (event: MouseEvent) => {
-
             const _event = event as MouseEvent & {
                 path: Node []
             };
-
             if (sortRef.current && !_event.path.includes(sortRef.current)) {
                 setOpen(false)
                 // не был клик на сорт
             }
         }
+
         document.body.addEventListener('click', handleClickOutside)
         return () => document.body.removeEventListener('click', handleClickOutside)
     }, [])

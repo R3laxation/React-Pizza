@@ -1,6 +1,5 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 import {ParamsType} from "../../../pages/Home";
-import {AppRootStateType} from "../../store";
 import {FilterStateType, SortType} from './types';
 
 const filterSlice = createSlice({

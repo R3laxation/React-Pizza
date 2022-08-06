@@ -19,7 +19,6 @@ export const CardItem = ({id, price, count, imageUrl, title, type, size}: CartIt
     const dispatch = useDispatch();
     const onClickPlus = () => {
         dispatch(plusItem({id}))
-
     }
 
     const onClickMinus = () => {

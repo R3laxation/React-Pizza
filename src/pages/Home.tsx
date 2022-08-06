@@ -51,13 +51,12 @@ const Home = ({}: HomePropsType) => {
         const sortBy = sort.sortProperty.replace('-', '');
         const order = sort.sortProperty.includes('-') ? 'asc' : 'desc';
 
-
         dispatch(fetchPizzas({
             category, search, sortBy, order, currentPage
         }))
     }
 
-    // Если был первый рендер, проверяем URL-параметры и сохраняем в Redux
+    // Если был первый рендер, проверяем URL-параметры, парсим их и сохраняем в Redux
     useEffect(() => {
         if (window.location.search) {
             const params = qs.parse(window.location.search.substring(1))
@@ -66,10 +65,9 @@ const Home = ({}: HomePropsType) => {
                 dispatch(setFilters({...params, sort} as ParamsType))
             }
             isSearch.current = true
-
         }
     }, [])
-    // Если был первый рендер, то запрашиваем пиццы
+    // Если был первый рендер, то запрашиваем пиццы, делаем проверку, если пришли параметры из юрл, то диспатчим
     useEffect(() => {
         window.scrollTo(0, 0)
         if (!isSearch.current) {
@@ -78,9 +76,8 @@ const Home = ({}: HomePropsType) => {
         isSearch.current = false;
     }, [categoryId, sort.sortProperty, searchValue, currentPage])
 
-    // Если изменили параметры и был первый рендер
+    // Если изменили параметры и был первый рендер, после первого рендера ставим isMounted - true и он выполнит код
     useEffect(() => {
-
         if (isMounted.current) {
             const queryString = qs.stringify({
                 sortProperty: sort.sortProperty,
